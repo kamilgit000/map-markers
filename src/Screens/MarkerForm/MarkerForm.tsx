@@ -4,23 +4,26 @@ import { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-import { addMarker, editMarker } from "Store/Slices/MarkerListSlice";
+import {
+  addMarker,
+  editMarker,
+  editAndDelete,
+} from "Store/Slices/MarkerListSlice";
 import { RootState } from "Store/Store";
 import { MarkerItem } from "Types/MarkerItem";
 import { latituteValidation, longituteValidation } from "Utils/constants";
-import { getMarkerItemKey } from "Utils/helpers";
 import Input from "./Input";
 import { Container, Form } from "./styles";
 
 export default function MarkerForm() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const dialog = useDialog();
   const {
     handleSubmit,
     formState: { errors },
     reset,
     control,
-  } = useForm<MarkerItem>({ mode: "onChange" });
+  } = useForm<Omit<MarkerItem, "id">>({ mode: "onChange" });
   const dispatch = useDispatch();
 
   const markersList = useSelector(
@@ -33,33 +36,44 @@ export default function MarkerForm() {
   );
 
   const onSubmit = useCallback(
-    (item: MarkerItem) => {
-      if (editItem) {
-        dispatch(editMarker({ previous: editItem, updated: item }));
+    (item: Omit<MarkerItem, "id">) => {
+      const duplicated = Object.values(markersList).find(
+        ({ longitude, latitude }) =>
+          longitude === item.longitude && latitude === item.latitude
+      );
+      if (duplicated) {
+        dialog.show({
+          title: "Marker with those coordinates already exists",
+          description: `Would you like to replace it? ${
+            editItem ? "(it will delete current one)" : ""
+          }`,
+          primaryText: "Yes",
+          onPrimary: () => {
+            dispatch(
+              editItem
+                ? editAndDelete({
+                    deleteId: duplicated.id,
+                    editId: editItem.id,
+                    updated: item,
+                  })
+                : editMarker({ editId: duplicated.id, updated: item })
+            );
+            alert("Marker replaced!");
+            reset(item);
+          },
+          secondaryText: "No",
+        });
+      } else if (editItem) {
+        dispatch(editMarker({ editId: editItem.id, updated: item }));
         alert("Marker edited!");
-        setSearchParams({ edit: getMarkerItemKey(item) }, { replace: true });
         reset(item);
       } else {
-        if (markersList[getMarkerItemKey(item)]) {
-          dialog.show({
-            title: "Marker with those coordinates already exists",
-            description: "Would you like to replace it?",
-            primaryText: "Yes",
-            onPrimary: () => {
-              dispatch(addMarker(item));
-              alert("Marker replaced!");
-              reset();
-            },
-            secondaryText: "No",
-          });
-        } else {
-          dispatch(addMarker(item));
-          alert("Marker added!");
-          reset();
-        }
+        dispatch(addMarker(item));
+        alert("Marker added!");
+        reset();
       }
     },
-    [editItem, dialog, markersList, dispatch, reset, setSearchParams]
+    [editItem, dialog, markersList, dispatch, reset]
   );
 
   useEffect(() => {

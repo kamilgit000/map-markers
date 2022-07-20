@@ -2,7 +2,8 @@ import { Controller, ControllerProps } from "react-hook-form";
 import { TextField } from "@mui/material";
 import { MarkerItem } from "Types/MarkerItem";
 
-interface Props extends Omit<ControllerProps<MarkerItem>, "render"> {
+interface Props
+  extends Omit<ControllerProps<Omit<MarkerItem, "id">>, "render"> {
   label: string;
   error?: boolean;
   errorMessage?: string;

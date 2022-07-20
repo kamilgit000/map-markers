@@ -31,7 +31,7 @@ export default function MarkerList() {
       dialog.show({
         title: `Do you want to delete ${item.title}?`,
         description: `Coordinates: ${item.longitude}, ${item.latitude}`,
-        onPrimary: () => dispatch(removeMarker(item)),
+        onPrimary: () => dispatch(removeMarker({ id: item.id })),
         primaryText: "Yes",
         secondaryText: "No",
       });

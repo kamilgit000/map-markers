@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { MarkerItem } from "Types/MarkerItem";
-import { getMarkerItemKey } from "Utils/helpers";
+import { v4 as uuidv4 } from "uuid";
 
 export interface MarkerListState {
   markerList: { [key: string]: MarkerItem };
@@ -15,29 +15,48 @@ export const markerListSlice = createSlice({
   name: "markerList",
   initialState,
   reducers: {
-    addMarker: (state: MarkerListState, action: PayloadAction<MarkerItem>) => {
-      const key = getMarkerItemKey(action.payload);
+    addMarker: (
+      state: MarkerListState,
+      action: PayloadAction<Omit<MarkerItem, "id">>
+    ) => {
+      const id = uuidv4();
 
-      state.markerList[key] = action.payload;
+      state.markerList[id] = {
+        ...action.payload,
+        id,
+      };
     },
-    removeMarker: (state: MarkerListState, action: PayloadAction<MarkerItem>) => {
-      const key = getMarkerItemKey(action.payload);
-
-      delete state.markerList[key];
+    removeMarker: (
+      state: MarkerListState,
+      action: PayloadAction<{ id: string }>
+    ) => {
+      delete state.markerList[action.payload.id];
     },
     editMarker: (
       state: MarkerListState,
-      action: PayloadAction<{ previous: MarkerItem; updated: MarkerItem }>
+      {
+        payload: { editId, updated },
+      }: PayloadAction<{ editId: string; updated: Omit<MarkerItem, "id"> }>
     ) => {
-      const previousKey = getMarkerItemKey(action.payload.previous);
-      const updatedKey = getMarkerItemKey(action.payload.updated);
-
-      delete state.markerList[previousKey];
-      state.markerList[updatedKey] = action.payload.updated;
+      state.markerList[editId] = { ...updated, id: editId };
+    },
+    editAndDelete: (
+      state: MarkerListState,
+      {
+        payload: { deleteId, editId, updated },
+      }: PayloadAction<{
+        deleteId: string;
+        editId: string;
+        updated: Omit<MarkerItem, "id">;
+      }>
+    ) => {
+      delete state.markerList[deleteId];
+      state.markerList[editId] = { ...updated, id: editId };
     },
   },
 });
 
-export const { addMarker, removeMarker, editMarker } = markerListSlice.actions;
+export const { addMarker, removeMarker, editMarker, editAndDelete } =
+  markerListSlice.actions;
 
 export default markerListSlice.reducer;
