@@ -1,7 +1,6 @@
 enum AppRoutes {
-  Add = "add",
   List = "list",
-  Edit = "edit",
+  Form = "form",
 }
 
 export default AppRoutes;

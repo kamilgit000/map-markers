@@ -15,10 +15,10 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": true,
-    "baseUrl": "src"
+    "baseUrl": "src",
+    "typeRoots": ["src/LibTypes", "node_modules/@types"]
   },
   "include": ["src"]
 }

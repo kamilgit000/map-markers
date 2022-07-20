@@ -15,13 +15,13 @@ export default function Header() {
             value={AppRoutes.List}
             component={Link}
             to={AppRoutes.List}
-            label="Pin List"
+            label="Markers List"
           />
           <Tab
-            value={AppRoutes.Add}
+            value={AppRoutes.Form}
             component={Link}
-            to={AppRoutes.Add}
-            label="Add pin"
+            to={AppRoutes.Form}
+            label="Marker form"
           />
         </Tabs>
       </Box>
