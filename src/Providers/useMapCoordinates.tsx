@@ -3,19 +3,24 @@ import {
   Dispatch,
   ReactNode,
   SetStateAction,
+  useCallback,
   useContext,
   useMemo,
   useState,
 } from "react";
+import debounce from "lodash.debounce";
 import { MarkerItem } from "Types/MarkerItem";
 
 interface MapCoordinatesState {
-  clickedMarker?: MarkerItem;
   setClickedMarker: (item?: MarkerItem) => void;
-  editingMarker?: Partial<MarkerItem>;
   setEditingMarker: Dispatch<SetStateAction<Partial<MarkerItem> | undefined>>;
-  deleteMarkId?: string;
   setDeleteMarkId: (id: string) => void;
+  debounceSetEditingMarker: Dispatch<
+    SetStateAction<Partial<MarkerItem> | undefined>
+  >;
+  deleteMarkId?: string;
+  editingMarker?: Partial<MarkerItem>;
+  clickedMarker?: MarkerItem;
 }
 const MapCoordinatesContext = createContext<MapCoordinatesState | undefined>(
   undefined
@@ -32,6 +37,11 @@ export default function MapCoordinatesProvider({ children }: Props) {
   >();
   const [deleteMarkId, setDeleteMarkId] = useState<string | undefined>();
 
+  const debounceSetEditingMarker = useCallback(
+    debounce(setEditingMarker, 500),
+    []
+  );
+
   const value = useMemo(
     () => ({
       clickedMarker,
@@ -40,6 +50,7 @@ export default function MapCoordinatesProvider({ children }: Props) {
       setEditingMarker,
       deleteMarkId,
       setDeleteMarkId,
+      debounceSetEditingMarker,
     }),
     [
       clickedMarker,
@@ -48,6 +59,7 @@ export default function MapCoordinatesProvider({ children }: Props) {
       setDeleteMarkId,
       editingMarker,
       setEditingMarker,
+      debounceSetEditingMarker,
     ]
   );
 

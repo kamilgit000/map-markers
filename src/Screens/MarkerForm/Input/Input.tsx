@@ -22,7 +22,7 @@ export default function Input({
   pattern,
   required,
 }: Props) {
-  const { setEditingMarker } = useMapCoordinates();
+  const { debounceSetEditingMarker } = useMapCoordinates();
 
   return (
     <Controller
@@ -33,28 +33,30 @@ export default function Input({
         required,
         pattern,
       }}
-      render={({ field }) => (
-        <TextField
-          error={error}
-          label={label}
-          helperText={error && errorMessage}
-          {...field}
-          onChange={(args) => {
-            setEditingMarker((item) => {
-              if (item) {
+      render={({ field }) => {
+        return (
+          <TextField
+            error={error}
+            label={label}
+            helperText={error && errorMessage}
+            {...field}
+            onChange={(args) => {
+              debounceSetEditingMarker((item) => {
+                if (item) {
+                  return {
+                    ...item,
+                    [name]: args.target.value,
+                  };
+                }
                 return {
-                  ...item,
                   [name]: args.target.value,
                 };
-              }
-              return {
-                [name]: args.target.value,
-              };
-            });
-            field.onChange(args);
-          }}
-        />
-      )}
+              });
+              field.onChange(args);
+            }}
+          />
+        );
+      }}
     />
   );
 }
