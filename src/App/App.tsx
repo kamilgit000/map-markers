@@ -25,13 +25,13 @@ export default function App() {
               <Content flexDirection={smallWindow ? "column" : "row"}>
                 <ContenBox
                   scroll
-                  width={smallWindow ? "100%" : "50%"}
+                  width={smallWindow ? "100%" : "40%"}
                   height={smallWindow ? "50%" : "100%"}
                 >
                   <Routing />
                 </ContenBox>
                 <ContenBox
-                  width={smallWindow ? "100%" : "50%"}
+                  width={smallWindow ? "100%" : "60%"}
                   height={smallWindow ? "50%" : "100%"}
                 >
                   <Map />

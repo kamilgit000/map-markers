@@ -16,7 +16,7 @@ const iconButtonWidth = 72;
 export default function MarkerList() {
   const navigate = useNavigate();
   const dialog = useDialog();
-  const { setMapCoordinates } = useMapCoordinates();
+  const { setClickedMarker } = useMapCoordinates();
 
   const dispatch = useDispatch();
   const markersList = useSelector((state: RootState) =>
@@ -32,27 +32,27 @@ export default function MarkerList() {
 
   const showDeleteDialog = useCallback(
     (item: MarkerItem) => {
-      setMapCoordinates([Number(item.latitude), Number(item.longitude)]);
+      setClickedMarker(item);
       dialog.show({
         title: `Do you want to delete ${item.title}?`,
         description: `Coordinates: ${item.latitude}, ${item.longitude}`,
         onPrimary: () => {
           dispatch(removeMarker({ id: item.id }));
-          setMapCoordinates([undefined, undefined]);
+          setClickedMarker(undefined);
         },
         primaryText: "Yes",
         secondaryText: "No",
       });
     },
-    [dialog, dispatch, setMapCoordinates]
+    [dialog, dispatch, setClickedMarker]
   );
 
   const onItemClick = useCallback(
     (item: MarkerItem) => {
       setSelectedId(item.id);
-      setMapCoordinates([Number(item.latitude), Number(item.longitude)]);
+      setClickedMarker(item);
     },
-    [setMapCoordinates]
+    [setClickedMarker]
   );
 
   return (

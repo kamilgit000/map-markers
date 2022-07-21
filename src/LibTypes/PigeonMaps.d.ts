@@ -6,12 +6,18 @@ declare module "pigeon-maps" {
     center?: marker;
     defaultCenter?: marker;
     defaultZoom?: number;
+    onClick?: () => void;
     children?: React.ReactNode;
   }) => JSX.Element;
   declare const Marker = (props: {
     width: number;
     anchor: marker;
     color: string;
+    onClick?: () => void;
+    children?: React.ReactNode;
+  }) => JSX.Element;
+  declare const Overlay = (props: {
+    anchor: marker;
     children?: React.ReactNode;
   }) => JSX.Element;
 }

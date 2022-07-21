@@ -1,20 +1,21 @@
 import {
   createContext,
+  Dispatch,
   ReactNode,
-  useCallback,
+  SetStateAction,
   useContext,
   useMemo,
   useState,
 } from "react";
+import { MarkerItem } from "Types/MarkerItem";
 
 interface MapCoordinatesState {
-  setLatitude: (latitude: number) => void;
-  setLongitude: (longitude: number) => void;
-  setMapCoordinates: (coords: [number?, number?]) => void;
+  clickedMarker?: MarkerItem;
+  setClickedMarker: (item?: MarkerItem) => void;
+  editingMarker?: Partial<MarkerItem>;
+  setEditingMarker: Dispatch<SetStateAction<Partial<MarkerItem> | undefined>>;
   deleteMarkId?: string;
   setDeleteMarkId: (id: string) => void;
-  longitude?: number;
-  latitude?: number;
 }
 const MapCoordinatesContext = createContext<MapCoordinatesState | undefined>(
   undefined
@@ -25,33 +26,28 @@ interface Props {
 }
 
 export default function MapCoordinatesProvider({ children }: Props) {
-  const [latitude, setLatitude] = useState<number | undefined>();
-  const [longitude, setLongitude] = useState<number | undefined>();
+  const [clickedMarker, setClickedMarker] = useState<MarkerItem | undefined>();
+  const [editingMarker, setEditingMarker] = useState<
+    Partial<MarkerItem> | undefined
+  >();
   const [deleteMarkId, setDeleteMarkId] = useState<string | undefined>();
-
-  const setMapCoordinates = useCallback((coords: [number?, number?]) => {
-    setLatitude(coords[0]);
-    setLongitude(coords[1]);
-  }, []);
 
   const value = useMemo(
     () => ({
-      setLatitude,
-      setLongitude,
-      setMapCoordinates,
-      longitude,
-      latitude,
+      clickedMarker,
+      setClickedMarker,
+      editingMarker,
+      setEditingMarker,
       deleteMarkId,
       setDeleteMarkId,
     }),
     [
-      setMapCoordinates,
-      setLatitude,
-      setLongitude,
-      longitude,
-      latitude,
+      clickedMarker,
+      setClickedMarker,
       deleteMarkId,
       setDeleteMarkId,
+      editingMarker,
+      setEditingMarker,
     ]
   );
 

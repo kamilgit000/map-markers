@@ -20,7 +20,8 @@ import { Container, Form } from "./styles";
 export default function MarkerForm() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { setMapCoordinates, setDeleteMarkId } = useMapCoordinates();
+  const { setEditingMarker, setDeleteMarkId, setClickedMarker } =
+    useMapCoordinates();
   const dialog = useDialog();
   const {
     handleSubmit,
@@ -43,14 +44,15 @@ export default function MarkerForm() {
     (text: string, resetItem?: Omit<MarkerItem, "id">) => {
       alert(text);
       reset(resetItem);
-      setMapCoordinates([undefined, undefined]);
+      setEditingMarker(undefined);
       setDeleteMarkId("");
     },
-    [reset, setMapCoordinates, setDeleteMarkId]
+    [reset, setEditingMarker, setDeleteMarkId]
   );
 
   const onSubmit = useCallback(
     (item: Omit<MarkerItem, "id">) => {
+      setClickedMarker(undefined);
       const duplicated = Object.values(markersList).find(
         ({ longitude, latitude }) =>
           longitude === item.longitude && latitude === item.latitude
@@ -84,19 +86,24 @@ export default function MarkerForm() {
         resetFormWithAlert("Marker added!");
       }
     },
-    [editItem, dialog, markersList, dispatch, resetFormWithAlert]
+    [
+      editItem,
+      dialog,
+      markersList,
+      dispatch,
+      resetFormWithAlert,
+      setClickedMarker,
+    ]
   );
 
   useEffect(() => {
     if (editItem) {
       reset(editItem);
       setDeleteMarkId(editItem.id);
-      setMapCoordinates([
-        Number(editItem.latitude),
-        Number(editItem.longitude),
-      ]);
+      setClickedMarker(editItem);
+      setEditingMarker(editItem);
     }
-  }, [editItem, reset, setDeleteMarkId, setMapCoordinates]);
+  }, [editItem, reset, setClickedMarker, setEditingMarker, setDeleteMarkId]);
 
   useEffect(() => {
     if (markersList[searchParams.get("edit") || ""] && !editItem) {
@@ -107,9 +114,9 @@ export default function MarkerForm() {
   useEffect(() => {
     return () => {
       setDeleteMarkId("");
-      setMapCoordinates([undefined, undefined]);
+      setEditingMarker(undefined);
     };
-  }, [setDeleteMarkId, setMapCoordinates]);
+  }, [setDeleteMarkId, setEditingMarker]);
 
   return (
     <Container>

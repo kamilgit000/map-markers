@@ -1,27 +1,34 @@
 import { Container } from "./styles";
-import { Map as PigeonMap, Marker } from "pigeon-maps";
+import { Map as PigeonMap, Marker, Overlay } from "pigeon-maps";
 import { useMemo } from "react";
 import { useMapCoordinates } from "Providers/useMapCoordinates";
 import { useSelector } from "react-redux";
 import { RootState } from "Store/Store";
+import { MarkerItem } from "Types/MarkerItem";
+import { Card, CardContent, Typography } from "@mui/material";
 
 export default function Map() {
-  const { latitude, longitude, deleteMarkId } = useMapCoordinates();
+  const { editingMarker, deleteMarkId, clickedMarker, setClickedMarker } =
+    useMapCoordinates();
 
   const markersList = useSelector((state: RootState) =>
     Object.values(state.markers.markerList)
   );
 
-  const center: [number, number] = useMemo(() => {
-    if (latitude !== undefined && longitude !== undefined) {
-      return [latitude, longitude];
+  const center: [number, number] | undefined = useMemo(() => {
+    if (
+      editingMarker?.latitude !== undefined &&
+      editingMarker?.longitude !== undefined
+    ) {
+      return [Number(editingMarker.latitude), Number(editingMarker.longitude)];
     }
-    const markerExists = markersList[markersList.length - 1];
-    if (markerExists) {
-      return [Number(markerExists.latitude), Number(markerExists.longitude)];
+    if (
+      clickedMarker?.latitude !== undefined &&
+      clickedMarker?.longitude !== undefined
+    ) {
+      return [Number(clickedMarker.latitude), Number(clickedMarker.longitude)];
     }
-    return [52, 21]; // around warsaw
-  }, [latitude, longitude, markersList]);
+  }, [editingMarker, clickedMarker]);
 
   return (
     <Container>
@@ -30,18 +37,48 @@ export default function Map() {
         center={center}
         defaultCenter={center}
         defaultZoom={5}
+        onClick={() => setClickedMarker(undefined)}
       >
-        {markersList.map(({ latitude, longitude, id }: any) => (
+        {markersList.map((item: MarkerItem) => (
           <Marker
-            key={id}
+            onClick={() => setClickedMarker(item)}
+            key={item.id}
             width={50}
-            anchor={[Number(latitude), Number(longitude)]}
-            color={deleteMarkId === id ? "yellow" : "blue"}
+            anchor={[Number(item.latitude), Number(item.longitude)]}
+            color={deleteMarkId === item.id ? "yellow" : "green"}
           />
         ))}
-        {longitude !== undefined && latitude !== undefined && (
-          <Marker width={50} anchor={[latitude, longitude]} color="red" />
+        {clickedMarker && (
+          <Overlay
+            anchor={[
+              Number(clickedMarker.latitude),
+              Number(clickedMarker.longitude),
+            ]}
+          >
+            <Card>
+              <CardContent>
+                <Typography variant="h5" component="div" marginBottom={2}>
+                  {clickedMarker.title}
+                </Typography>
+                <Typography color="text.secondary">
+                  {clickedMarker.description}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Overlay>
         )}
+
+        {editingMarker?.longitude !== undefined &&
+          editingMarker?.latitude !== undefined && (
+            <Marker
+              width={50}
+              anchor={[
+                Number(editingMarker?.latitude),
+                Number(editingMarker?.longitude),
+              ]}
+              color="blue"
+            />
+          )}
       </PigeonMap>
     </Container>
   );

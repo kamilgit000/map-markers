@@ -22,7 +22,7 @@ export default function Input({
   pattern,
   required,
 }: Props) {
-  const { setLongitude, setLatitude } = useMapCoordinates();
+  const { setEditingMarker } = useMapCoordinates();
 
   return (
     <Controller
@@ -40,11 +40,17 @@ export default function Input({
           helperText={error && errorMessage}
           {...field}
           onChange={(args) => {
-            if (name === "longitude") {
-              setLongitude(Number(args.target.value));
-            } else if (name === "latitude") {
-              setLatitude(Number(args.target.value));
-            }
+            setEditingMarker((item) => {
+              if (item) {
+                return {
+                  ...item,
+                  [name]: args.target.value,
+                };
+              }
+              return {
+                [name]: args.target.value,
+              };
+            });
             field.onChange(args);
           }}
         />
