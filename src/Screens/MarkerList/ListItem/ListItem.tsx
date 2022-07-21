@@ -39,10 +39,10 @@ function ListItem({
         <ItemText primary={latitude} />
         <ItemText primary={longitude} />
       </ListItemContent>
-      <IconButton iconButtonWidth={iconButtonWidth} onClick={onEditClick}>
+      <IconButton width={iconButtonWidth} onClick={onEditClick}>
         <EditIcon color="primary" />
       </IconButton>
-      <IconButton iconButtonWidth={iconButtonWidth} onClick={onDeleteClick}>
+      <IconButton width={iconButtonWidth} onClick={onDeleteClick}>
         <DeleteIcon color="error" />
       </IconButton>
     </ItemList>

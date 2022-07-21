@@ -11,8 +11,8 @@ export const ItemList = styled.div`
 export const ItemText = styled(ListItemText)`
   width: 33.3%;
 `;
-export const IconButton = styled(Button)<{ iconButtonWidth: number }>`
-  width: ${({ iconButtonWidth }) => iconButtonWidth}px;
+export const IconButton = styled(Button)<{ width: number }>`
+  width: ${({ width }) => width}px;
 `;
 export const ListItemContent = styled(ListItemButton)`
   padding-right: 0 !important;

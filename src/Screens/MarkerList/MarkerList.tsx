@@ -59,7 +59,7 @@ export default function MarkerList() {
     <Container>
       {markersList.length ? (
         <List disablePadding>
-          <ListHeader iconButtonWidth={iconButtonWidth}>
+          <ListHeader iconbuttonwidth={iconButtonWidth}>
             <ListHeaderItem primary="Title" secondary="description" />
             <ListHeaderItem primary="Latitude" />
             <ListHeaderItem primary="Longitude" />
