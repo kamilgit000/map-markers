@@ -3,12 +3,15 @@ import Map from "Components/Map";
 import Routing from "Routing";
 import { BrowserRouter } from "react-router-dom";
 import GlobalStyles from "./globalStyles";
-import { Container, RoutesContainer, Content, MapContainer } from "./styles";
+import { Container, ContenBox, Content } from "./styles";
 import Providers from "Providers";
 import { Provider } from "react-redux";
 import Store from "Store";
+import { useSmallWindow } from "Hooks/useSmallWindow";
 
 export default function App() {
+  const smallWindow = useSmallWindow();
+
   return (
     <Provider store={Store}>
       <Container>
@@ -16,13 +19,20 @@ export default function App() {
         <BrowserRouter>
           <Providers>
             <Header />
-            <Content>
-              <RoutesContainer>
+            <Content flexDirection={smallWindow ? "column" : "row"}>
+              <ContenBox
+                scroll
+                width={smallWindow ? "100%" : "50%"}
+                height={smallWindow ? "50%" : "100%"}
+              >
                 <Routing />
-              </RoutesContainer>
-              <MapContainer>
+              </ContenBox>
+              <ContenBox
+                width={smallWindow ? "100%" : "50%"}
+                height={smallWindow ? "50%" : "100%"}
+              >
                 <Map />
-              </MapContainer>
+              </ContenBox>
             </Content>
           </Providers>
         </BrowserRouter>

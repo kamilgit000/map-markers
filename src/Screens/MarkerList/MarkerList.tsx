@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
-import { List } from "@mui/material";
+import { List, Typography } from "@mui/material";
 import { useDialog } from "Providers/useDialog";
-import { Container } from "./styles";
+import { Container, ListHeader, ListHeaderItem } from "./styles";
 import ListItem from "./ListItem";
 import { useNavigate } from "react-router-dom";
 import AppRoutes from "Types/AppRoutes";
@@ -9,10 +9,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "Store/Store";
 import { removeMarker } from "Store/Slices/MarkerListSlice";
 import { MarkerItem } from "Types/MarkerItem";
+import { useMapCoordinates } from "Providers/useMapCoordinates";
+
+const iconButtonWidth = 72;
 
 export default function MarkerList() {
-  const dialog = useDialog();
   const navigate = useNavigate();
+  const dialog = useDialog();
+  const { setMapCoordinates } = useMapCoordinates();
 
   const dispatch = useDispatch();
   const markersList = useSelector((state: RootState) =>
@@ -28,34 +32,56 @@ export default function MarkerList() {
 
   const showDeleteDialog = useCallback(
     (item: MarkerItem) => {
+      setMapCoordinates([Number(item.latitude), Number(item.longitude)]);
       dialog.show({
         title: `Do you want to delete ${item.title}?`,
-        description: `Coordinates: ${item.longitude}, ${item.latitude}`,
-        onPrimary: () => dispatch(removeMarker({ id: item.id })),
+        description: `Coordinates: ${item.latitude}, ${item.longitude}`,
+        onPrimary: () => {
+          dispatch(removeMarker({ id: item.id }));
+          setMapCoordinates([undefined, undefined]);
+        },
         primaryText: "Yes",
         secondaryText: "No",
       });
     },
-    [dialog, dispatch]
+    [dialog, dispatch, setMapCoordinates]
   );
 
-  const onItemClick = useCallback((id: string) => setSelectedId(id), []);
+  const onItemClick = useCallback(
+    (item: MarkerItem) => {
+      setSelectedId(item.id);
+      setMapCoordinates([Number(item.latitude), Number(item.longitude)]);
+    },
+    [setMapCoordinates]
+  );
 
   return (
     <Container>
-      <List>
-        {markersList.map(([key, item]) => (
-          <ListItem
-            key={key}
-            id={key}
-            onClick={onItemClick}
-            onEdit={onEdit}
-            onDelete={showDeleteDialog}
-            selected={selectedId === key}
-            item={item}
-          />
-        ))}
-      </List>
+      {markersList.length ? (
+        <List disablePadding>
+          <ListHeader iconButtonWidth={iconButtonWidth}>
+            <ListHeaderItem primary="Title" secondary="description" />
+            <ListHeaderItem primary="Latitude" />
+            <ListHeaderItem primary="Longitude" />
+          </ListHeader>
+          {markersList.map(([key, item]) => (
+            <ListItem
+              key={key}
+              id={key}
+              onClick={onItemClick}
+              onEdit={onEdit}
+              onDelete={showDeleteDialog}
+              selected={selectedId === key}
+              item={item}
+              iconButtonWidth={iconButtonWidth}
+            />
+          ))}
+        </List>
+      ) : (
+        <Typography color="primary" margin="40px auto" textAlign="center">
+          Marker list is empty. Please add markers via form.
+        </Typography>
+      )}
     </Container>
   );
 }

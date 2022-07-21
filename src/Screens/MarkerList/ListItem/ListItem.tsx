@@ -1,17 +1,17 @@
 import { MarkerItem } from "Types/MarkerItem";
-import { Button, ListItemButton, ListItemText } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { ItemList } from "./styles";
+import { IconButton, ItemList, ItemText, ListItemContent } from "./styles";
 import { memo, useCallback } from "react";
 
 interface Props {
-  onClick: (id: string) => void;
+  onClick: (item: MarkerItem) => void;
   onEdit: (id: string) => void;
   onDelete: (item: MarkerItem) => void;
   selected: boolean;
   id: string;
   item: MarkerItem;
+  iconButtonWidth: number;
 }
 
 function ListItem({
@@ -22,23 +22,29 @@ function ListItem({
   onEdit,
   onDelete,
   id,
+  iconButtonWidth,
 }: Props) {
-  const onItemClick = useCallback(() => onClick(id), [id, onClick]);
+  const onItemClick = useCallback(() => onClick(item), [item, onClick]);
   const onDeleteClick = useCallback(() => onDelete(item), [item, onDelete]);
   const onEditClick = useCallback(() => onEdit(id), [id, onEdit]);
 
   return (
     <ItemList>
-      <ListItemButton selected={selected} onClick={onItemClick}>
-        <ListItemText primary={title} secondary={description} />
-        <ListItemText primary={`${longitude}, ${latitude}`} />
-      </ListItemButton>
-      <Button onClick={onEditClick}>
+      <ListItemContent
+        selected={selected}
+        onClick={onItemClick}
+        alignItems="center"
+      >
+        <ItemText primary={title} secondary={description} />
+        <ItemText primary={latitude} />
+        <ItemText primary={longitude} />
+      </ListItemContent>
+      <IconButton iconButtonWidth={iconButtonWidth} onClick={onEditClick}>
         <EditIcon color="primary" />
-      </Button>
-      <Button onClick={onDeleteClick}>
+      </IconButton>
+      <IconButton iconButtonWidth={iconButtonWidth} onClick={onDeleteClick}>
         <DeleteIcon color="error" />
-      </Button>
+      </IconButton>
     </ItemList>
   );
 }

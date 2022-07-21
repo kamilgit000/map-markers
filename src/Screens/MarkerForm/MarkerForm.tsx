@@ -1,15 +1,17 @@
 import { Button } from "@mui/material";
 import { useDialog } from "Providers/useDialog";
+import { useMapCoordinates } from "Providers/useMapCoordinates";
 import { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   addMarker,
   editMarker,
   editAndDelete,
 } from "Store/Slices/MarkerListSlice";
 import { RootState } from "Store/Store";
+import AppRoutes from "Types/AppRoutes";
 import { MarkerItem } from "Types/MarkerItem";
 import { latituteValidation, longituteValidation } from "Utils/constants";
 import Input from "./Input";
@@ -17,6 +19,8 @@ import { Container, Form } from "./styles";
 
 export default function MarkerForm() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { setMapCoordinates, setDeleteMarkId } = useMapCoordinates();
   const dialog = useDialog();
   const {
     handleSubmit,
@@ -33,6 +37,16 @@ export default function MarkerForm() {
   const editItem = useMemo(
     () => markersList[searchParams.get("edit") || ""],
     [searchParams, markersList]
+  );
+
+  const resetFormWithAlert = useCallback(
+    (text: string, resetItem?: Omit<MarkerItem, "id">) => {
+      alert(text);
+      reset(resetItem);
+      setMapCoordinates([undefined, undefined]);
+      setDeleteMarkId("");
+    },
+    [reset, setMapCoordinates, setDeleteMarkId]
   );
 
   const onSubmit = useCallback(
@@ -58,29 +72,44 @@ export default function MarkerForm() {
                   })
                 : editMarker({ editId: duplicated.id, updated: item })
             );
-            alert("Marker replaced!");
-            reset(item);
+            resetFormWithAlert("Marker replaced!", item);
           },
           secondaryText: "No",
         });
       } else if (editItem) {
         dispatch(editMarker({ editId: editItem.id, updated: item }));
-        alert("Marker edited!");
-        reset(item);
+        resetFormWithAlert("Marker edited!", item);
       } else {
         dispatch(addMarker(item));
-        alert("Marker added!");
-        reset();
+        resetFormWithAlert("Marker added!");
       }
     },
-    [editItem, dialog, markersList, dispatch, reset]
+    [editItem, dialog, markersList, dispatch, resetFormWithAlert]
   );
 
   useEffect(() => {
     if (editItem) {
       reset(editItem);
+      setDeleteMarkId(editItem.id);
+      setMapCoordinates([
+        Number(editItem.latitude),
+        Number(editItem.longitude),
+      ]);
     }
-  }, [editItem, reset]);
+  }, [editItem, reset, setDeleteMarkId, setMapCoordinates]);
+
+  useEffect(() => {
+    if (markersList[searchParams.get("edit") || ""] && !editItem) {
+      navigate(AppRoutes.List);
+    }
+  }, [navigate, searchParams, markersList, editItem]);
+
+  useEffect(() => {
+    return () => {
+      setDeleteMarkId("");
+      setMapCoordinates([undefined, undefined]);
+    };
+  }, [setDeleteMarkId, setMapCoordinates]);
 
   return (
     <Container>

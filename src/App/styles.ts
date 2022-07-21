@@ -6,15 +6,27 @@ export const Container = styled.div`
   width: 100%;
   overflow: hidden;
 `;
-export const Content = styled.div`
+export const Content = styled.div<{ flexDirection: "row" | "column" }>`
   display: flex;
   height: calc(100vh - ${headerHeight}px);
+  flex-direction: ${({ flexDirection }) => flexDirection};
 `;
 
-export const RoutesContainer = styled.div`
-  flex: 0.5;
-`;
-export const MapContainer = styled.div`
-  flex: 0.5;
-  height: 100%;
+export const ContenBox = styled.div<{
+  width: string;
+  height: string;
+  scroll?: boolean;
+}>`
+  width: ${({ width }) => width};
+  height: ${({ height }) => height};
+  ${({ scroll }) =>
+    scroll &&
+    `
+    overflow: scroll;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  `}
 `;

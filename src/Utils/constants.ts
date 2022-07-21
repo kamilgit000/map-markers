@@ -1,4 +1,5 @@
 export const headerHeight = 50;
+export const appLayoutBreakpoint = 900;
 
 // range -90 <-> 90
 export const latituteValidation =

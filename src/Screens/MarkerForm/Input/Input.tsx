@@ -1,6 +1,7 @@
 import { Controller, ControllerProps } from "react-hook-form";
 import { TextField } from "@mui/material";
 import { MarkerItem } from "Types/MarkerItem";
+import { useMapCoordinates } from "Providers/useMapCoordinates";
 
 interface Props
   extends Omit<ControllerProps<Omit<MarkerItem, "id">>, "render"> {
@@ -21,6 +22,8 @@ export default function Input({
   pattern,
   required,
 }: Props) {
+  const { setLongitude, setLatitude } = useMapCoordinates();
+
   return (
     <Controller
       name={name}
@@ -30,12 +33,20 @@ export default function Input({
         required,
         pattern,
       }}
-      render={(renderProps) => (
+      render={({ field }) => (
         <TextField
           error={error}
           label={label}
           helperText={error && errorMessage}
-          {...renderProps.field}
+          {...field}
+          onChange={(args) => {
+            if (name === "longitude") {
+              setLongitude(Number(args.target.value));
+            } else if (name === "latitude") {
+              setLatitude(Number(args.target.value));
+            }
+            field.onChange(args);
+          }}
         />
       )}
     />

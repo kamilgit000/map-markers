@@ -1,29 +1,47 @@
 import { Container } from "./styles";
 import { Map as PigeonMap, Marker } from "pigeon-maps";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
+import { useMapCoordinates } from "Providers/useMapCoordinates";
+import { useSelector } from "react-redux";
+import { RootState } from "Store/Store";
 
 export default function Map() {
-  const [center, setCenter] = useState<[number, number]>([50.879, 4.6997]);
-  const [zoom, setZoom] = useState(11);
+  const { latitude, longitude, deleteMarkId } = useMapCoordinates();
 
-  useEffect(() => {
-    setTimeout(() => {
-      setCenter([51.879, 45.6997]);
-    }, 2000);
-  }, []);
+  const markersList = useSelector((state: RootState) =>
+    Object.values(state.markers.markerList)
+  );
+
+  const center: [number, number] = useMemo(() => {
+    if (latitude !== undefined && longitude !== undefined) {
+      return [latitude, longitude];
+    }
+    const markerExists = markersList[markersList.length - 1];
+    if (markerExists) {
+      return [Number(markerExists.latitude), Number(markerExists.longitude)];
+    }
+    return [52, 21]; // around warsaw
+  }, [latitude, longitude, markersList]);
+
   return (
     <Container>
       <PigeonMap
-        onBoundsChanged={({ center, zoom }) => {
-          setCenter(center);
-          setZoom(zoom);
-        }}
-        zoom={zoom}
+        zoom={5}
         center={center}
         defaultCenter={center}
-        defaultZoom={11}
+        defaultZoom={5}
       >
-        <Marker width={50} anchor={center} />
+        {markersList.map(({ latitude, longitude, id }: any) => (
+          <Marker
+            key={id}
+            width={50}
+            anchor={[Number(latitude), Number(longitude)]}
+            color={deleteMarkId === id ? "yellow" : "blue"}
+          />
+        ))}
+        {longitude !== undefined && latitude !== undefined && (
+          <Marker width={50} anchor={[latitude, longitude]} color="red" />
+        )}
       </PigeonMap>
     </Container>
   );

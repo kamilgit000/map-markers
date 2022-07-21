@@ -8,5 +8,10 @@ declare module "pigeon-maps" {
     defaultZoom?: number;
     children?: React.ReactNode;
   }) => JSX.Element;
-  declare const Marker = (props: any) => JSX.Element;
+  declare const Marker = (props: {
+    width: number;
+    anchor: marker;
+    color: string;
+    children?: React.ReactNode;
+  }) => JSX.Element;
 }
