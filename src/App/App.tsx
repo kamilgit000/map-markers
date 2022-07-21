@@ -7,6 +7,8 @@ import { Container, ContenBox, Content } from "./styles";
 import Providers from "Providers";
 import { Provider } from "react-redux";
 import Store from "Store";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistor } from "Store/Store";
 import { useSmallWindow } from "Hooks/useSmallWindow";
 
 export default function App() {
@@ -18,22 +20,24 @@ export default function App() {
         <GlobalStyles />
         <BrowserRouter>
           <Providers>
-            <Header />
-            <Content flexDirection={smallWindow ? "column" : "row"}>
-              <ContenBox
-                scroll
-                width={smallWindow ? "100%" : "50%"}
-                height={smallWindow ? "50%" : "100%"}
-              >
-                <Routing />
-              </ContenBox>
-              <ContenBox
-                width={smallWindow ? "100%" : "50%"}
-                height={smallWindow ? "50%" : "100%"}
-              >
-                <Map />
-              </ContenBox>
-            </Content>
+            <PersistGate loading={null} persistor={persistor}>
+              <Header />
+              <Content flexDirection={smallWindow ? "column" : "row"}>
+                <ContenBox
+                  scroll
+                  width={smallWindow ? "100%" : "50%"}
+                  height={smallWindow ? "50%" : "100%"}
+                >
+                  <Routing />
+                </ContenBox>
+                <ContenBox
+                  width={smallWindow ? "100%" : "50%"}
+                  height={smallWindow ? "50%" : "100%"}
+                >
+                  <Map />
+                </ContenBox>
+              </Content>
+            </PersistGate>
           </Providers>
         </BrowserRouter>
       </Container>
