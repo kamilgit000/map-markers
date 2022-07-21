@@ -1,4 +1,5 @@
 import { Button } from "@mui/material";
+import { useSmallWindow } from "Hooks/useSmallWindow";
 import { useDialog } from "Providers/useDialog";
 import { useMapCoordinates } from "Providers/useMapCoordinates";
 import { useCallback, useEffect, useMemo } from "react";
@@ -19,6 +20,8 @@ import { Container, Form } from "./styles";
 
 export default function MarkerForm() {
   const [searchParams] = useSearchParams();
+  const smallWindow = useSmallWindow();
+
   const navigate = useNavigate();
   const { setEditingMarker, setDeleteMarkId, setClickedMarker } =
     useMapCoordinates();
@@ -120,7 +123,7 @@ export default function MarkerForm() {
 
   return (
     <Container>
-      <Form onSubmit={handleSubmit(onSubmit)}>
+      <Form onSubmit={handleSubmit(onSubmit)} smallWindow={smallWindow}>
         <Input
           name="title"
           label="Name"

@@ -26,13 +26,13 @@ export default function App() {
                 <ContenBox
                   scroll
                   width={smallWindow ? "100%" : "40%"}
-                  height={smallWindow ? "50%" : "100%"}
+                  height={smallWindow ? "45%" : "100%"}
                 >
                   <Routing />
                 </ContenBox>
                 <ContenBox
                   width={smallWindow ? "100%" : "60%"}
-                  height={smallWindow ? "50%" : "100%"}
+                  height={smallWindow ? "55%" : "100%"}
                 >
                   <Map />
                 </ContenBox>

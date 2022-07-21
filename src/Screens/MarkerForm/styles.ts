@@ -1,9 +1,9 @@
 import styled from "styled-components";
 
 export const Container = styled.div``;
-export const Form = styled.form`
+export const Form = styled.form<{ smallWindow: boolean }>`
   display: flex;
   flex-direction: column;
-  gap: 40px;
-  padding: 40px;
+  gap: ${({ smallWindow }) => (smallWindow ? 10 : 40)}px;
+  padding: ${({ smallWindow }) => (smallWindow ? 10 : 40)}px;
 `;
