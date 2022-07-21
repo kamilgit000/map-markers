@@ -1,16 +1,15 @@
-import { Container } from "./styles";
 import { Map as PigeonMap, Marker, Overlay } from "pigeon-maps";
 import { useMemo } from "react";
 import { useMapCoordinates } from "Providers/useMapCoordinates";
 import { useSelector } from "react-redux";
 import { RootState } from "Store/Store";
 import { MarkerItem } from "Types/MarkerItem";
-import { Card, CardContent, Typography } from "@mui/material";
+import { CardContent, Typography } from "@mui/material";
+import { Container, CardContainer } from "./styles";
 
 export default function Map() {
   const { editingMarker, deleteMarkId, clickedMarker, setClickedMarker } =
     useMapCoordinates();
-
   const markersList = useSelector((state: RootState) =>
     Object.values(state.markers.markerList)
   );
@@ -45,7 +44,7 @@ export default function Map() {
             key={item.id}
             width={50}
             anchor={[Number(item.latitude), Number(item.longitude)]}
-            color={deleteMarkId === item.id ? "yellow" : "green"}
+            color={deleteMarkId === item.id ? "red" : "green"}
           />
         ))}
         {clickedMarker && (
@@ -55,16 +54,21 @@ export default function Map() {
               Number(clickedMarker.longitude),
             ]}
           >
-            <Card>
+            <CardContainer>
               <CardContent>
-                <Typography variant="h5" component="div" marginBottom={2}>
+                <Typography
+                  variant="h5"
+                  component="div"
+                  marginBottom={2}
+                  noWrap
+                >
                   {clickedMarker.title}
                 </Typography>
-                <Typography color="text.secondary">
+                <Typography color="text.secondary" noWrap>
                   {clickedMarker.description}
                 </Typography>
               </CardContent>
-            </Card>
+            </CardContainer>
           </Overlay>
         )}
 

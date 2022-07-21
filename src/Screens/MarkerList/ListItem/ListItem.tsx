@@ -1,8 +1,15 @@
+import { memo, useCallback } from "react";
 import { MarkerItem } from "Types/MarkerItem";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { IconButton, ItemList, ItemText, ListItemContent } from "./styles";
-import { memo, useCallback } from "react";
+import {
+  IconButton,
+  ItemList,
+  ItemTextContainer,
+  ItemTextPrimary,
+  ItemTextSecondary,
+  ListItemContent,
+} from "./styles";
 
 interface Props {
   onClick: (item: MarkerItem) => void;
@@ -12,6 +19,7 @@ interface Props {
   id: string;
   item: MarkerItem;
   iconButtonWidth: number;
+  listLayout: { first: string; second: string; third: string };
 }
 
 function ListItem({
@@ -23,6 +31,7 @@ function ListItem({
   onDelete,
   id,
   iconButtonWidth,
+  listLayout,
 }: Props) {
   const onItemClick = useCallback(() => onClick(item), [item, onClick]);
   const onDeleteClick = useCallback(() => onDelete(item), [item, onDelete]);
@@ -35,14 +44,23 @@ function ListItem({
         onClick={onItemClick}
         alignItems="center"
       >
-        <ItemText primary={title} secondary={description} />
-        <ItemText primary={latitude} />
-        <ItemText primary={longitude} />
+        <ItemTextContainer width={listLayout.first}>
+          <ItemTextPrimary>{title}</ItemTextPrimary>
+          {!!description && (
+            <ItemTextSecondary>{description}</ItemTextSecondary>
+          )}
+        </ItemTextContainer>
+        <ItemTextContainer width={listLayout.second}>
+          <ItemTextPrimary>{latitude}</ItemTextPrimary>
+        </ItemTextContainer>
+        <ItemTextContainer width={listLayout.third}>
+          <ItemTextPrimary>{longitude}</ItemTextPrimary>
+        </ItemTextContainer>
       </ListItemContent>
-      <IconButton width={iconButtonWidth} onClick={onEditClick}>
+      <IconButton width={`${iconButtonWidth}px`} onClick={onEditClick}>
         <EditIcon color="primary" />
       </IconButton>
-      <IconButton width={iconButtonWidth} onClick={onDeleteClick}>
+      <IconButton width={`${iconButtonWidth}px`} onClick={onDeleteClick}>
         <DeleteIcon color="error" />
       </IconButton>
     </ItemList>

@@ -1,5 +1,6 @@
-import { Button, ListItemButton, ListItemText } from "@mui/material";
+import { Button, ListItemButton } from "@mui/material";
 import styled from "styled-components";
+import { forceWidth } from "Utils/styleHelpers";
 
 export const ItemList = styled.div`
   display: flex;
@@ -8,11 +9,28 @@ export const ItemList = styled.div`
   border-color: rgba(0, 0, 0, 0.12);
   height: 72px;
 `;
-export const ItemText = styled(ListItemText)`
-  width: 33.3%;
+export const ItemTextContainer = styled.div<{ width: string }>`
+  ${({ width }) => forceWidth(width)};
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-right: 10px;
 `;
-export const IconButton = styled(Button)<{ width: number }>`
-  width: ${({ width }) => width}px;
+export const ItemTextPrimary = styled.p`
+  font-size: 16px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+`;
+export const ItemTextSecondary = styled.p`
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+`;
+export const IconButton = styled(Button)<{ width: string }>`
+  ${({ width }) => forceWidth(width)};
 `;
 export const ListItemContent = styled(ListItemButton)`
   padding-right: 0 !important;

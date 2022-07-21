@@ -10,18 +10,25 @@ import { RootState } from "Store/Store";
 import { removeMarker } from "Store/Slices/MarkerListSlice";
 import { MarkerItem } from "Types/MarkerItem";
 import { useMapCoordinates } from "Providers/useMapCoordinates";
+import { useSmallWindow } from "Hooks/useSmallWindow";
 
-const iconButtonWidth = 72;
+const listLayout = {
+  first: "44%",
+  second: "28%",
+  third: "28%",
+};
 
 export default function MarkerList() {
+  const smallWindow = useSmallWindow();
   const navigate = useNavigate();
   const dialog = useDialog();
   const { setClickedMarker } = useMapCoordinates();
-
   const dispatch = useDispatch();
   const markersList = useSelector((state: RootState) =>
     Object.entries(state.markers.markerList)
   );
+
+  const iconButtonWidth = smallWindow ? 40 : 72;
 
   const [selectedId, setSelectedId] = useState<string>("");
 
@@ -60,9 +67,13 @@ export default function MarkerList() {
       {markersList.length ? (
         <List disablePadding>
           <ListHeader iconbuttonwidth={iconButtonWidth}>
-            <ListHeaderItem primary="Title" secondary="description" />
-            <ListHeaderItem primary="Latitude" />
-            <ListHeaderItem primary="Longitude" />
+            <ListHeaderItem
+              width={listLayout.first}
+              primary="Title"
+              secondary="description"
+            />
+            <ListHeaderItem width={listLayout.second} primary="Latitude" />
+            <ListHeaderItem width={listLayout.third} primary="Longitude" />
           </ListHeader>
           {markersList.map(([key, item]) => (
             <ListItem
@@ -74,6 +85,7 @@ export default function MarkerList() {
               selected={selectedId === key}
               item={item}
               iconButtonWidth={iconButtonWidth}
+              listLayout={listLayout}
             />
           ))}
         </List>

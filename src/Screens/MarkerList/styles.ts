@@ -1,5 +1,6 @@
 import { ListItemText, ListSubheader } from "@mui/material";
 import styled from "styled-components";
+import { forceWidth } from "Utils/styleHelpers";
 
 export const Container = styled.div`
   overflow: scroll;
@@ -17,6 +18,6 @@ export const ListHeader = styled(ListSubheader)<{ iconbuttonwidth: number }>`
   display: flex;
   align-items: center;
 `;
-export const ListHeaderItem = styled(ListItemText)`
-  width: 33.3%;
+export const ListHeaderItem = styled(ListItemText)<{ width: string }>`
+  ${({ width }) => forceWidth(width)}
 `;

@@ -21,7 +21,6 @@ import { Container, Form } from "./styles";
 export default function MarkerForm() {
   const [searchParams] = useSearchParams();
   const smallWindow = useSmallWindow();
-
   const navigate = useNavigate();
   const { setEditingMarker, setDeleteMarkId, setClickedMarker } =
     useMapCoordinates();
@@ -33,7 +32,6 @@ export default function MarkerForm() {
     control,
   } = useForm<Omit<MarkerItem, "id">>({ mode: "onChange" });
   const dispatch = useDispatch();
-
   const markersList = useSelector(
     (state: RootState) => state.markers.markerList
   );
