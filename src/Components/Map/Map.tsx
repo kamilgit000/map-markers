@@ -56,17 +56,14 @@ export default function Map() {
           >
             <CardContainer>
               <CardContent>
-                <Typography
-                  variant="h5"
-                  component="div"
-                  marginBottom={2}
-                  noWrap
-                >
+                <Typography variant="h5" component="div" noWrap>
                   {clickedMarker.title}
                 </Typography>
-                <Typography color="text.secondary" noWrap>
-                  {clickedMarker.description}
-                </Typography>
+                {!!clickedMarker.description && (
+                  <Typography color="text.secondary" noWrap>
+                    {clickedMarker.description}
+                  </Typography>
+                )}
               </CardContent>
             </CardContainer>
           </Overlay>

@@ -5,7 +5,7 @@ import { useMapCoordinates } from "Providers/useMapCoordinates";
 import { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import {
   addMarker,
   editMarker,
@@ -20,15 +20,21 @@ import { Container, Form } from "./styles";
 
 export default function MarkerForm() {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const smallWindow = useSmallWindow();
   const navigate = useNavigate();
-  const { setEditingMarker, setDeleteMarkId, setClickedMarker } =
-    useMapCoordinates();
+  const {
+    setEditingMarker,
+    setDeleteMarkId,
+    setClickedMarker,
+    debounceSetEditingMarker,
+  } = useMapCoordinates();
   const dialog = useDialog();
   const {
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
     control,
   } = useForm<Omit<MarkerItem, "id">>({ mode: "onChange" });
   const dispatch = useDispatch();
@@ -107,10 +113,10 @@ export default function MarkerForm() {
   }, [editItem, reset, setClickedMarker, setEditingMarker, setDeleteMarkId]);
 
   useEffect(() => {
-    if (markersList[searchParams.get("edit") || ""] && !editItem) {
-      navigate(AppRoutes.List);
+    if (!!location.search && !editItem) {
+      navigate(`/${AppRoutes.List}`);
     }
-  }, [navigate, searchParams, markersList, editItem]);
+  }, [navigate, editItem, location]);
 
   useEffect(() => {
     return () => {
@@ -118,6 +124,12 @@ export default function MarkerForm() {
       setEditingMarker(undefined);
     };
   }, [setDeleteMarkId, setEditingMarker]);
+
+  useEffect(() => {
+    const subscription = watch((value) => debounceSetEditingMarker(value));
+
+    return () => subscription.unsubscribe();
+  }, [watch, debounceSetEditingMarker]);
 
   return (
     <Container>

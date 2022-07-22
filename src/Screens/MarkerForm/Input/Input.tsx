@@ -1,7 +1,6 @@
 import { Controller, ControllerProps } from "react-hook-form";
 import { TextField } from "@mui/material";
 import { MarkerItem } from "Types/MarkerItem";
-import { useMapCoordinates } from "Providers/useMapCoordinates";
 
 interface Props
   extends Omit<ControllerProps<Omit<MarkerItem, "id">>, "render"> {
@@ -22,7 +21,6 @@ export default function Input({
   pattern,
   required,
 }: Props) {
-  const { debounceSetEditingMarker } = useMapCoordinates();
 
   return (
     <Controller
@@ -40,20 +38,6 @@ export default function Input({
             label={label}
             helperText={error && errorMessage}
             {...field}
-            onChange={(args) => {
-              debounceSetEditingMarker((item) => {
-                if (item) {
-                  return {
-                    ...item,
-                    [name]: args.target.value,
-                  };
-                }
-                return {
-                  [name]: args.target.value,
-                };
-              });
-              field.onChange(args);
-            }}
           />
         );
       }}
